@@ -55,10 +55,31 @@
 }
 
 .ce-popover__item-label,
-.ce-popover__item-icon {
+.ce-popover__item-icon,
+.ce-inline-toolbar__buttons,
+.ce-inline-toolbar__toggler-and-button-wrapper,
+.ce-conversion-tool--focused {
   color: rgb(109, 0, 233);
 }
 .ce-block--selected,
 .ce-block__content {
   background-color: #393939;
+}
+
+.question__field {
+  color: #6f0099;
+  padding: 0.2rem 0.8rem;
+  background-color: #e398ff;
+  border-radius: 0.5rem;
+  margin: 0rem 0.5rem;
+}
+.question__field:read-only {
+  pointer-events: none;
+}
+.question__field:hover {
+  cursor: pointer;
+}
+
+.ce-inline-tool {
+  min-width: 32px;
 }

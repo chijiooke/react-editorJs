@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codexteam/shortcuts": "^1.2.0",
     "@editorjs/editorjs": "^2.26.5",
     "@editorjs/header": "^2.7.0",
     "@emotion/react": "^11.10.6",
