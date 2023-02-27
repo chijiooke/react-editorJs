@@ -1,20 +1,21 @@
 import EditorJS, { LogLevels, OutputData } from "@editorjs/editorjs";
 import Header from "@editorjs/header";
-import { Box } from "@mui/system";
-import { default as React, Dispatch, FC, useEffect, useRef } from "react";
+import { default as React, Dispatch, FC, MutableRefObject, useEffect, useRef } from "react";
+import CustomText from "./editor-tools/block-tools/CustomText";
 import { SpanTool } from "./editor-tools/inline-tools/spanTag";
+import { FormDataType } from "./types/FormDataType";
 
 const EDITTOR_HOLDER_ID = "editorjs";
 
 const Editor: FC<{
   editorData: OutputData | undefined;
   setEditorData: Dispatch<OutputData>;
-}> = ({ editorData, setEditorData }) => {
-  const ejInstance = useRef<any>(null);
+  formData: MutableRefObject<FormDataType | null>;
+}> = ({ editorData, setEditorData, formData }) => {
+  const ejInstance = useRef<any | null>(null);
 
   // This will run only once
   useEffect(() => {
-    new SpanTool();
     return () => {
       if (!ejInstance.current) {
         initEditor();
@@ -23,23 +24,17 @@ const Editor: FC<{
     };
   }, []);
 
-  // class MyTool {
-  //   // data:any
-  //    api:any
-  //   constructor({ apidata}){
-  //     this.api = apidata;
-     
-  //   }
-  
-  //   isFirstBlock() {
-  //     return this.api.blocks.getCurrentBlockIndex() === 0;
-  //   }
-  //   // ... other methods
-  // }
+  if (ejInstance.current) {
+    new SpanTool({
+      api: ejInstance?.current?.api,
+      data: ejInstance?.current?.saver.save(),
+    });
 
-  const [anchorEl, setAnchorEl] = React.useState<{ x: any; y: any } | null>(
-    null
-  );
+    new CustomText({
+      api: ejInstance?.current?.api,
+      // data: ejInstance?.current?.saver.save(),
+    });
+  }
 
   const initEditor = () => {
     const editor = new EditorJS({
@@ -52,33 +47,26 @@ const Editor: FC<{
 
       onChange: async (e, event) => {
         let content = await editor.saver.save();
-        // editor.api.blocks.getCurrentBlockIndex()
         setEditorData(content);
       },
       autofocus: true,
+      defaultBlock: "customText",
       tools: {
         header: Header,
         span: SpanTool,
+        customText: {
+          class: CustomText,
+        
+          config: {
+            getFormData: () => formData,
+          },
+        },
       },
     });
   };
 
   return (
     <React.Fragment>
-      {!!anchorEl && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: `${anchorEl?.y}px`,
-            left: `${anchorEl?.x}px`,
-            height: "200px",
-            backgroundColor: "#fff",
-            width: "200px",
-            zIndex: "2000",
-          }}
-        ></Box>
-      )}
-
       <div style={{ minWidth: "100%" }} id={EDITTOR_HOLDER_ID}>
         {" "}
       </div>

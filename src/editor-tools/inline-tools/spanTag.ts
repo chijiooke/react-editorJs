@@ -1,5 +1,7 @@
 import { getRandomCharacters } from "../../utils/idGenerator";
 import Shortcut from "@codexteam/shortcuts";
+import { OutputData } from "@editorjs/editorjs";
+import EditorJS from "@editorjs/editorjs";
 
 let shiftR = new Shortcut({
   name: "shift+Q",
@@ -22,9 +24,19 @@ export class SpanTool {
 
   button: HTMLButtonElement | null;
   state: boolean;
-  constructor() {
+  data: OutputData | undefined;
+  api: EditorJS | null;
+  constructor({
+    api,
+    data,
+  }: {
+    api: any | null;
+    data: OutputData | undefined;
+  }) {
     this.button = null;
     this.state = false;
+    this.data = data;
+    this.api = api;
   }
 
   render() {
@@ -38,24 +50,24 @@ export class SpanTool {
 
   surround(range: any) {
     if (this.state) {
-      // If highlights is already applied, do nothing for now
       return;
     }
 
     const selectedText = range.extractContents();
 
-    // Create MARK element
     const span = document.createElement("SPAN");
     span.className = "question__field";
     span.id = getRandomCharacters(9);
+    span.setAttribute(
+      "metaData",
+      JSON.stringify({ title: "This Is Title", type: "type-data" })
+    );
+    console.log(span);
+    // span.dataH = JSON.stringify({title:'This Is Title', type:'type-data'})
+    // span.innerText = "testing bro";
 
-    // Append to the MARK element selected TextNode
     span.appendChild(selectedText);
-    // console.log(`${span}`);
-
-    // Insert new element
     range.insertNode(span);
-    // range.insertNode('&nbsp');
   }
 
   checkState(selection: any) {
@@ -65,15 +77,22 @@ export class SpanTool {
       return;
     }
 
-    const anchorElement = text instanceof Element ? text : text.parentElement;
-    // console.log(anchorElement?.innerHTML);
-    // console.log(text);
+    if (!!this.api) {
+      const currentBlockIndex = this.api.blocks.getCurrentBlockIndex();
+      const block = this.api.blocks.getBlockByIndex(0);
+      // console.log(this.data);
+    }
 
+    const anchorElement = text instanceof Element ? text : text.parentElement;
     this.state = !!anchorElement.closest("SPAN");
   }
 
-  save(data: any) {
-    console.log(data);
-    return { sss: "sss" };
+  static get sanitize() {
+    return {
+      span: (e: any) => {
+        // e.classList.remove("question__field");
+        return { class: true, id: true, metaData: true };
+      },
+    };
   }
 }

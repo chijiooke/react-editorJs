@@ -13,7 +13,7 @@ export function getRandomCharacters(length: number): string {
     characters.push(String.fromCharCode(numberCharCode));
   // list of alphabets (A-Z)
   for (var alphabetCharCode = 65; alphabetCharCode < 91; alphabetCharCode++)
-    characters.push(String.fromCharCode(numberCharCode));
+    characters.push(String.fromCharCode(alphabetCharCode));
 
   let charactersLength = characters.length;
   for (let i = 0; i < length; i++) {

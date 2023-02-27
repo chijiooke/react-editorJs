@@ -5,18 +5,15 @@ import {
   ClickAwayListener,
   Container,
   Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
   Popper,
-  Select,
   SelectChangeEvent,
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./App.css";
 import Editor from "./Editor";
+import { FormDataType } from "./types/FormDataType";
 
 function App() {
   const [editorData, setEditorData] = useState<OutputData | undefined>();
@@ -40,14 +37,27 @@ function App() {
       setAnchorEl(null);
       setOpen(false);
     }
-    console.log(event);
   };
 
   window.addEventListener("keypress", (e: KeyboardEvent) => {
     e.stopPropagation();
-    if (e.shiftKey && e.key === "@") {
+    if (e.key === "/") {
       handleClick(e);
     }
+  });
+
+
+  const formdata = useRef<null | FormDataType>(null)
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    formdata.current = onChangeFormData;
+    setOpen(false);
+    setOnChangeFormData({ title: "", type: "" });
+  };
+  // const [formdata, setFormdata] = useState<null | FormDataType>(null);
+  const [onChangeFormData, setOnChangeFormData] = useState<FormDataType>({
+    title: "",
+    type: "",
   });
 
   return (
@@ -79,40 +89,37 @@ function App() {
                 flexDirection: "column",
                 gap: "0.5rem",
               }}
+              onSubmit={handleSubmit}
             >
               <TextField
+                value={onChangeFormData.title}
                 label="Title"
                 type="text"
                 size="small"
                 fullWidth
-                onMouseEnter={(e) => {
-                  // console.log(e);
-                }}
+                onChange={(e) =>
+                  setOnChangeFormData({
+                    ...onChangeFormData,
+                    title: e?.target.value,
+                  })
+                }
               />
-              <FormControl
-                fullWidth
+              <TextField
+                value={onChangeFormData.type}
+                label="Type"
+                type="text"
                 size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <InputLabel id="demo-select-small">Answer Type</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={selectType}
-                  label="Answer Type"
-                  onChange={handleChange}
-                  onMouseEnter={(e) => {
-                    // console.log(e);
-                  }}
-                >
-                  <MenuItem value="Text">Text</MenuItem>
-                  <MenuItem value="Number">Number</MenuItem>
-                  <MenuItem value="Date">Date</MenuItem>
-                </Select>
-              </FormControl>
+                fullWidth
+                onChange={(e) =>
+                  setOnChangeFormData({
+                    ...onChangeFormData,
+                    type: e?.target.value,
+                  })
+                }
+              />
+
               <Button
+                type="submit"
                 sx={{
                   textTransform: "none",
                   alignSelf: "end",
@@ -167,7 +174,11 @@ function App() {
               textAlign: "left",
             }}
           >
-            <Editor editorData={editorData} setEditorData={setEditorData} />
+            <Editor
+              editorData={editorData}
+              setEditorData={setEditorData}
+              formData={formdata}
+            />
           </Box>
           <Button
             variant="contained"
